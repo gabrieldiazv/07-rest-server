@@ -1,19 +1,21 @@
-// {
-//     nombre: 'asd',
-//     correo: 'asd',
-//     password: 'adsd',
-//     img: 'asdsad',
-//     rol: 'asdad',
-//     estado: true,
-//     google: false
-// }
-
 const { Schema, model } = require("mongoose");
 
 const UsuarioSchema = Schema({
   nombre: {
     type: String,
     required: [true, "nombre es obligatorio"],
+  },
+  apellidoPaterno: {
+    type: String,
+    required: [true, "apellido es obligatorio"]
+  },
+  apellidoMaterno: {
+    type: String,
+    required: [true, "apellido es obligatorio"]
+  },
+  rut:{
+    type: String,
+    required: [true, "rut es obligatorio"],
   },
   correo: {
     type: String,
@@ -24,28 +26,17 @@ const UsuarioSchema = Schema({
     type: String,
     required: [true, "password es obligatoria"],
   },
-  img: {
-    type: String,
-  },
   rol: {
     type: String,
     required: [true, "rol es obligatorio"],
-    enum: ["ADMIN_ROLE", "USER_ROLE"],
+    enum: ["ADMIN", "MEDICO", ""],
   },
   estado: {
     type: Boolean,
     default: true,
   },
-  google: {
-    type: Boolean,
-    default: false,
-  },
 });
 
-UsuarioSchema.methods.toJSON = function () {
-  const { __v, _id, password, ...usuario } = this.toObject();
-  usuario.uid = _id;
-  return usuario;
-};
+UsuarioSchema.index({'$**': 'text'});
 
 module.exports = model("Usuario", UsuarioSchema);
