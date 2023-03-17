@@ -9,6 +9,7 @@ class Server {
     this.usuariosPath = "/api/usuarios";
     this.authPath = "/api/auth";
     this.registroMedicoPath = "/api/registroMedico";
+    this.registroGeneralPath = "/api/registroGeneral";
     // Conectar a base de datos para
     this.conectarDB();
     // Middlewares
@@ -34,6 +35,7 @@ class Server {
     this.app.use(this.authPath, require("../routes/auth"));
     this.app.use(this.usuariosPath, require("../routes/usuarios"));
     this.app.use(this.registroMedicoPath, require("../routes/registroMedico"));
+    this.app.use(this.registroGeneralPath, require("../routes/registroGeneral"));
   }
 
   listen() {

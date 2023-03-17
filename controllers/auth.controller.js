@@ -11,12 +11,14 @@ const login = async (req, res = response) => {
     const usuario = await Usuario.findOne({ correo });
     if (!usuario) {
       return res.status(400).json({
+        ok: false,
         msg: "ussuario / password no son correctos - correo",
       });
     }
     //  si el usuario esta activo
     if (!usuario.estado) {
       return res.status(400).json({
+        ok: false,
         msg: "ussuario / password no son correctos - estado:false",
       });
     }
@@ -24,20 +26,24 @@ const login = async (req, res = response) => {
     const validPassword = bcryptjs.compareSync(password, usuario.password);
     if (!validPassword) {
       return res.status(400).json({
+        ok: false,
         msg: "usuario / password no son correctos - password",
       });
     }
 
     // Generar JWT
     const token = await generarJWT(usuario.id);
+    let { _doc } = usuario;
+    let { password: pass, ...resto } = _doc;
 
     res.json({
-      usuario,
+      ok: true,
+      usuario: resto,
       token,
     });
   } catch (error) {
     console.log(error);
-    res.status(500).json({ msg: "Hable con el administrador" });
+    res.status(500).json({ ok: false, msg: "Hable con el administrador" });
   }
 };
 
@@ -78,7 +84,7 @@ const muestrame = async (req, res = response) => {
       rut,
       correo,
       estado,
-      _id
+      _id,
     } = _doc;
 
     res.json({
@@ -90,15 +96,29 @@ const muestrame = async (req, res = response) => {
       rut,
       correo,
       estado,
-      _id
+      _id,
     });
   } catch (error) {
-    console.log(error)
+    console.log(error);
     res.status(500).json({
-      ok:false,
+      ok: false,
       msg: "error interno hable con el administrador",
     });
   }
+};
+
+// funcion que resfresh el token
+const renewToken = async (req, res = response) => {
+  const { uid } = req;
+  // Generar un nuevo JWT
+  const token = await generarJWT(uid);
+  // Obtener el usuario por UID
+  const usuario = await Usuario.findById(uid);
+  res.json({
+    ok: true,
+    usuario,
+    token,
+  });
 };
 
 module.exports = {
